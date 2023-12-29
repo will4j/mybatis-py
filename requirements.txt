@@ -1,0 +1,6 @@
+flake8
+loguru
+pre-commit
+pytest
+pytest-cov
+PyYaml

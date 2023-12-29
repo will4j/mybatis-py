@@ -1,0 +1,25 @@
+# https://pre-commit.com/index.html#adding-pre-commit-plugins-to-your-project
+exclude: ^infrastructure/sdk
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0  # Use the ref you want to point at
+    hooks:
+      # https://pre-commit.com/hooks.html
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: requirements-txt-fixer
+  - repo: https://github.com/PyCQA/flake8
+    # https://flake8.pycqa.org/en/latest/user/using-hooks.html
+    rev: 6.1.0
+    hooks:
+      - id: flake8
+        # see flake8 configurations in .flake8 file
+        # exclude should put here
+        exclude: ^$
+  - repo: https://github.com/asottile/reorder-python-imports
+    rev: v3.12.0
+    hooks:
+      - id: reorder-python-imports
+        # https://github.com/asottile/reorder-python-imports#what-does-it-do
+        exclude: __init__.py

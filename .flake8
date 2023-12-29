@@ -1,0 +1,12 @@
+# https://flake8.pycqa.org/en/latest/user/configuration.html
+# https://flake8.pycqa.org/en/latest/user/options.html
+[flake8]
+max-line-length=120
+exclude =
+  .git,
+  __pycache__,
+  venv,
+  docs,
+per-file-ignores =
+    # imported but unused
+    __init__.py: F401

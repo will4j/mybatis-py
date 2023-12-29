@@ -1,0 +1,12 @@
+# https://coverage.readthedocs.io/en/latest/config.html
+[run]
+source = .
+branch = True
+omit =
+    # virtual environment
+    venv/*
+    # unit tests
+    tests/*
+
+[report]
+show_missing = False

@@ -1,0 +1,108 @@
+# https://taskfile.dev/installation/
+# https://taskfile.dev/usage/
+# https://taskfile.dev/styleguide/
+version: '3'
+
+vars:
+  CONDA_PREFIX: ./venv
+  CONDA_ENV_FILE: environment.yml
+  PIP_REQ_FILE: requirements.txt
+
+tasks:
+  default:
+    desc: build or update venv
+    cmds:
+      - echo "OS={{OS}} ARCH={{ARCH}}"
+      - task: git:submodule
+      - task: venv:build
+    silent: true
+
+  git:submodule:
+    desc: update git submodule
+    cmds:
+      - git submodule sync
+      - git submodule update --init --recursive --remote
+
+  venv:build:
+    desc: build conda venv when config file updated
+    cmds:
+      - task: venv:inner-build
+      - task: venv:config-vars
+      - task: venv:usage
+    silent: true
+
+  venv:usage:
+    desc: help message of venv
+    cmds:
+      - conda env list --json
+      - echo "environment variables:"
+      - conda env config vars list -p {{.CONDA_PREFIX}}
+      - echo "continue to use commands below:"
+      - echo "conda activate {{.CONDA_PREFIX}} (activate conda environment)"
+      - echo "conda deactivate (deactivate conda environment)"
+      - echo "task --force (force rebuild venv)"
+      - echo "task --list (show all tasks)"
+    silent: true
+
+  venv:inner-build:
+    internal: true
+    silent: true
+    cmds:
+      - test ! -d {{.CONDA_PREFIX}} || conda env update -f {{.CONDA_ENV_FILE}} -p {{.CONDA_PREFIX}}
+      - test -d {{.CONDA_PREFIX}} || conda env create -f {{.CONDA_ENV_FILE}} -p {{.CONDA_PREFIX}}
+      - touch {{.CONDA_PREFIX}}
+    status:
+      - test {{.CONDA_PREFIX}} -nt {{.CONDA_ENV_FILE}}
+      - test {{.CONDA_PREFIX}} -nt {{.PIP_REQ_FILE}}
+
+  venv:config-vars:
+    desc: config environment variables of venv
+    cmds:
+      - conda env config vars set PYTHONPATH="{{.PYTHONPATH}}" -p {{.CONDA_PREFIX}}
+    vars:
+      PYTHONPATH:
+        sh: pwd
+
+  venv:list-vars:
+    desc: list environment variables of venv
+    cmds:
+      - conda env config vars list -p {{.CONDA_PREFIX}}
+
+  venv:clean:
+    desc: remove conda venv
+    silent: true
+    cmds:
+      - conda env remove -p {{.CONDA_PREFIX}}
+      - rm -rf {{.CONDA_PREFIX}}
+      - echo "conda env list after remove venv"
+      - conda env list --json
+
+  pre-commit:
+    desc: install and run pre-commit
+    cmds:
+      - cmd: pre-commit install
+      - cmd: pre-commit run --all-files
+
+  git:pull:
+    desc: update code include submodules
+    cmds:
+      - git pull --recurse-submodules
+
+  pytest:
+    desc: run unit tests
+    cmds:
+      - pytest -W ignore::DeprecationWarning
+
+  pytest:cov:
+    desc: run unit tests with coverage
+    cmds:
+      - pytest --cov -W ignore::DeprecationWarning
+
+  pytest:cov:skip-covered:
+    desc: run unit tests with coverage, skip covered
+    cmds:
+      - pytest --cov -W ignore::DeprecationWarning --cov-report=term:skip-covered
+
+  main:
+    cmds:
+      - cmd: python scripts/main.py

@@ -1,0 +1,32 @@
+# https://packaging.python.org/en/latest/tutorials/packaging-projects/
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+# https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
+# https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+[tool.setuptools.package-dir]
+meta_repository = "meta_repository"
+
+[project]
+name = "meta-repository"
+version = "1.0.0"
+authors = [
+    { name = "William Wang", email = "williamw0825@gmail.com" },
+]
+description = "Meta Repository."
+readme = "README.md"
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "loguru",
+    "PyYaml",
+]
+
+[project.urls]
+Homepage = "https://github.com/will4j/meta-repository-py"
+Issues = "https://github.com/will4j/meta-repository-py/issues"

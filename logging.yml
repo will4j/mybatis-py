@@ -1,0 +1,23 @@
+# https://docs.python.org/zh-cn/3.11/library/logging.config.html#configuration-dictionary-schema
+version: 1
+disable_existing_loggers: false
+root:
+  handlers:
+    - loguru
+  level: INFO
+handlers:
+  loguru:
+    class: meta_repository.logging.LoguruInterceptHandler
+    # constructor param starts with loguru_
+    loguru_format: "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
+    loguru_config:
+      # https://loguru.readthedocs.io/en/stable/api/logger.html#loguru._logger.Logger.configure
+      handlers:
+        # param: https://loguru.readthedocs.io/en/stable/api/logger.html#loguru._logger.Logger.add
+        - sink: ext://sys.stdout
+          level: INFO
+          format: ext://meta_repository.logging.compact_name_format
+          filter: 'lambda://record:record["level"].no < logging.ERROR'
+        - sink: ext://sys.stderr
+          level: ERROR
+          format: ext://meta_repository.logging.compact_name_format
